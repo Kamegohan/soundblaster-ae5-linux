@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    name: Python ${{ matrix.python }} (${{ matrix.lang }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12", "3.13"]
+        lang: ["en", "de"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        env:
+          AE5_LANG: ${{ matrix.lang }}
+        run: python -m unittest discover -s tests -t . -v
+      - name: Byte-compile all modules (incl. GUI)
+        run: python -m compileall -q ae5control
+
+  shell:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check (bash -n)
+        run: |
+          for f in tools/*.sh system/ae5-reset-helper bin/ae5-control bin/ae5ctl; do
+            bash -n "$f" || exit 1
+          done
+      - name: ShellCheck (errors only)
+        run: shellcheck -S error tools/*.sh system/ae5-reset-helper bin/ae5-control bin/ae5ctl
+
+  files:
+    name: Desktop file and polkit policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install validators
+        run: sudo apt-get update && sudo apt-get install -y desktop-file-utils libxml2-utils
+      - name: Validate
+        run: |
+          sed 's|@ROOT@|/usr/lib/ae5-control|' desktop/ae5-control.desktop > /tmp/ae5-control.desktop
+          desktop-file-validate /tmp/ae5-control.desktop
+          xmllint --noout system/org.ae5control.reset.policy

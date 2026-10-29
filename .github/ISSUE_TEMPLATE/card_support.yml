@@ -1,0 +1,42 @@
+name: Support another card / Andere Karte unterstützen
+description: Request or help with support for another Creative CA0132 card (Sound Blaster Z, ZxR, AE-7, Recon3D …) / Unterstützung für eine weitere Karte
+labels: ["enhancement", "hardware"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        These cards use other driver models and partly other controls. The data below helps to add them.
+        Diese Karten nutzen andere Treiber-Modelle und teils andere Regler. Die folgenden Angaben helfen beim Hinzufügen.
+  - type: input
+    id: model
+    attributes:
+      label: Card model / Kartenmodell
+      placeholder: "Sound BlasterX AE-7"
+    validations:
+      required: true
+  - type: textarea
+    id: lspci
+    attributes:
+      label: lspci
+      description: Output of / Ausgabe von `lspci -nnk | grep -A3 -i creative`
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: codec
+    attributes:
+      label: Codec
+      description: First lines of / Erste Zeilen von `head -5 /proc/asound/card*/codec#*` (Creative card only / nur die Creative-Karte)
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: controls
+    attributes:
+      label: Mixer controls / Regler
+      description: Output of / Ausgabe von `amixer -c <card> contents` (card number from / Kartennummer aus `cat /proc/asound/cards`)
+      render: text
+  - type: textarea
+    id: problem
+    attributes:
+      label: Does your card have the same drop-out problem? / Hat deine Karte das gleiche Ausfall-Problem?

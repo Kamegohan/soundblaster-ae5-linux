@@ -1,5 +1,7 @@
 # Sound BlasterX AE-5 on Linux – stable sound + settings app
 
+[![Tests](https://github.com/Kamegohan/soundblaster-ae5-linux/actions/workflows/tests.yml/badge.svg)](https://github.com/Kamegohan/soundblaster-ae5-linux/actions/workflows/tests.yml) [![License: GPL v2+](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](LICENSE)
+
 **[Deutsche Version → README.de.md](README.de.md)**
 
 The Creative Sound BlasterX **AE-5 / AE-5 Plus** is a great card, but on Linux it has two problems:

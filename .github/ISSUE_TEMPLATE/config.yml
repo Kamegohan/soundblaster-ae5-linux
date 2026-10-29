@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: README (English)
+    url: https://github.com/Kamegohan/soundblaster-ae5-linux#readme
+    about: Installation, usage and troubleshooting
+  - name: README (Deutsch)
+    url: https://github.com/Kamegohan/soundblaster-ae5-linux/blob/main/README.de.md
+    about: Installation, Benutzung und Fehlersuche

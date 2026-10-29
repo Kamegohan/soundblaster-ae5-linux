@@ -1,0 +1,58 @@
+name: Bug report / Fehlerbericht
+description: Sound drops out, recovery fails, the app misbehaves … / Ton fällt aus, Neustart klappt nicht, App verhält sich falsch …
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! English or German is fine. / Danke für die Meldung! Deutsch oder Englisch ist beides okay.
+        Please record a diagnostic log first / Bitte vorher ein Diagnose-Protokoll aufzeichnen:
+        `ae5-diag start` → reproduce the problem / Fehler auslösen → `ae5-diag mark "what happened"`
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Was ist passiert?
+      description: What did you do, what did you expect, what happened instead? / Was hast du gemacht, was hast du erwartet, was ist passiert?
+    validations:
+      required: true
+  - type: input
+    id: card
+    attributes:
+      label: Card / Karte
+      description: Output of / Ausgabe von `lspci -nn | grep -i creative`
+      placeholder: "Creative Labs CA0132 Sound Core3D [...] [1102:0012]"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Distribution, kernel (`uname -r`), PipeWire (`pipewire --version`), desktop
+      placeholder: "CachyOS, 7.3.0-4-cachyos, PipeWire 1.6.10, KDE Plasma 6"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ae5-control version / Version
+      description: "`pacman -Q ae5-control` or the git commit / oder der Git-Commit"
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation
+      options:
+        - Arch package (makepkg / pacman)
+        - Manual installers (tools/install-*.sh)
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Diagnostic log / Diagnose-Protokoll
+      description: Contents of / Inhalt von `~/.local/state/ae5-control/diag/current.log` (attach the file if it is long / bei langen Protokollen als Datei anhängen)
+      render: text
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else? / Sonstiges
+      description: Output of `ae5-recover --check`, `cat /proc/asound/cards`, screenshots …
