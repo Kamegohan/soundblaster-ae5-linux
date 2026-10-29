@@ -1,0 +1,28 @@
+_hint() {
+  echo ":: ae5-control"
+  echo "   Enable the user services (once, as your normal user):"
+  echo "     systemctl --user daemon-reload"
+  echo "     systemctl --user enable --now ae5-watchdog.service ae5-amp-guard.service"
+  echo "   Reload PipeWire:  systemctl --user restart wireplumber pipewire pipewire-pulse"
+  echo "   The driver override (model ae5) takes effect after the next boot."
+}
+
+post_install() {
+  udevadm control --reload 2>/dev/null
+  udevadm trigger --action=change --subsystem-match=sound 2>/dev/null
+  _hint
+}
+
+post_upgrade() {
+  udevadm control --reload 2>/dev/null
+  udevadm trigger --action=change --subsystem-match=sound 2>/dev/null
+  echo ":: ae5-control: restart the user services:"
+  echo "     systemctl --user daemon-reload && systemctl --user restart ae5-watchdog ae5-amp-guard"
+}
+
+post_remove() {
+  udevadm control --reload 2>/dev/null
+  udevadm trigger --action=change --subsystem-match=sound 2>/dev/null
+  echo ":: ae5-control removed. Profiles in ~/.config/ae5-control are kept."
+  echo "   Run 'systemctl --user daemon-reload' and restart PipeWire."
+}

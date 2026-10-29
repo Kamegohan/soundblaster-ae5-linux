@@ -1,0 +1,2 @@
+# Weist der Sound BlasterX AE-5 (PCI 1102:0012) das eigene PipeWire-Profil zu.
+SUBSYSTEM=="sound", KERNEL=="card*", ATTRS{vendor}=="0x1102", ATTRS{device}=="0x0012", ENV{ACP_PROFILE_SET}="ae5-control.conf"

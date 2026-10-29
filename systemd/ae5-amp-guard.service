@@ -1,0 +1,11 @@
+[Unit]
+Description=AE-5 Verstärker-Wächter – weckt den Kopfhörerverstärker, wenn Ton startet
+After=pipewire-pulse.service wireplumber.service
+
+[Service]
+ExecStart=@LIBDIR@/tools/ae5-amp-guard.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

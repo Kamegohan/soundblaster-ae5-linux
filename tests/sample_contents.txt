@@ -1,0 +1,31 @@
+numid=63,iface=CARD,name='Headphone Jack'
+  ; type=BOOLEAN,access=r-------,values=1
+  : values=on
+numid=89,iface=MIXER,name='Master Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=99,step=0
+  : values=58
+  | dBscale-min=-99.00dB,step=1.00dB,mute=0
+numid=77,iface=MIXER,name='Front Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=2
+  : values=on,off
+numid=119,iface=MIXER,name='AE-5: Headphone Gain'
+  ; type=ENUMERATED,access=rw------,values=1,items=3
+  ; Item #0 'Low (16-31  Ohms)'
+  ; Item #1 'Medium (32-149  Ohms)'
+  ; Item #2 'High (150-600  Ohms)'
+  : values=2
+numid=123,iface=MIXER,name='EQ Band0 Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=48,step=1
+  : values=24
+numid=92,iface=MIXER,name='FX: Crystalizer Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=105,iface=MIXER,name='FX: Crystalizer Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=100,step=1
+  : values=65
+numid=64,iface=MIXER,name='IEC958 Playback Default'
+  ; type=IEC958,access=rw------,values=1
+  : values=[AES0=0x04 AES1=0x82 AES2=0x00 AES3=0x02]
+numid=200,iface=MIXER,name='Read Only Thing'
+  ; type=INTEGER,access=r-------,values=1,min=0,max=10,step=0
+  : values=3

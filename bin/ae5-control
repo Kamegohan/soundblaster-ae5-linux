@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Startet die Einstellungs-App aus dem Projektordner. "--tray" startet nur im Tray.
+ROOT=$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)
+exec env PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" python3 -m ae5control.gui "$@"

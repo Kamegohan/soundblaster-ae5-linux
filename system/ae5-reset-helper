@@ -1,0 +1,51 @@
+#!/bin/bash
+# ae5-reset-helper – läuft als root (über pkexec) und kann genau drei Dinge
+# an der Sound BlasterX AE-5 tun. Das Gerät sucht der Helfer selbst; vom
+# Aufrufer wird nur der Name der Aktion übernommen.
+#   reconfig  Soundchip neu initialisieren
+#   rebind    Karte vom Treiber snd_hda_intel trennen und neu verbinden
+#   rescan    Karte vom PCI-Bus entfernen und neu suchen
+set -eu
+PATH=/usr/bin:/bin
+
+find_pci() {
+    local d
+    for d in /sys/bus/pci/devices/*; do
+        if [ "$(cat "$d/vendor" 2>/dev/null)" = "0x1102" ] && [ "$(cat "$d/device" 2>/dev/null)" = "0x0012" ]; then
+            basename "$d"; return 0
+        fi
+    done
+    return 1
+}
+
+find_codec() {
+    local d
+    for d in /sys/class/sound/hwC*D*; do
+        [ "$(cat "$d/vendor_id" 2>/dev/null)" = "0x11020011" ] && { echo "$d"; return 0; }
+    done
+    return 1
+}
+
+case "${1:-}" in
+    reconfig)
+        codec=$(find_codec) || { echo "CA0132-Codec nicht gefunden" >&2; exit 2; }
+        echo 1 > "$codec/reconfig"
+        ;;
+    rebind)
+        addr=$(find_pci) || { echo "AE-5 nicht gefunden" >&2; exit 2; }
+        [ -e "/sys/bus/pci/drivers/snd_hda_intel/$addr" ] && echo "$addr" > /sys/bus/pci/drivers/snd_hda_intel/unbind
+        sleep 1
+        echo "$addr" > /sys/bus/pci/drivers/snd_hda_intel/bind
+        ;;
+    rescan)
+        if addr=$(find_pci); then
+            echo 1 > "/sys/bus/pci/devices/$addr/remove"
+            sleep 2
+        fi
+        echo 1 > /sys/bus/pci/rescan
+        ;;
+    *)
+        echo "Nutzung: ae5-reset-helper reconfig|rebind|rescan" >&2
+        exit 1
+        ;;
+esac

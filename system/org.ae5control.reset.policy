@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>ae5-control</vendor>
+  <action id="org.ae5control.reset">
+    <description>Restart the Sound BlasterX AE-5 sound card</description>
+    <description xml:lang="de">Soundkarte Sound BlasterX AE-5 neu starten</description>
+    <message>Authentication is required to restart the AE-5 sound card</message>
+    <message xml:lang="de">Zum Neustarten der AE-5 ist eine Anmeldung nötig</message>
+    <defaults>
+      <!-- Nur der am Rechner angemeldete Benutzer darf ohne Passwort -->
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/libexec/ae5-control/ae5-reset-helper</annotate>
+  </action>
+</policyconfig>

@@ -1,0 +1,11 @@
+[Unit]
+Description=AE-5 Wächter – startet die Soundkarte nach einem Absturz automatisch neu
+After=pipewire.service wireplumber.service
+
+[Service]
+ExecStart=@LIBDIR@/tools/ae5-watchdog.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

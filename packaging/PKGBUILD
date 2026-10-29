@@ -1,0 +1,80 @@
+# Package for ae5-control (Sound BlasterX AE-5 on Linux).
+# Build from this folder:  makepkg -si
+# Sources are taken directly from the repository (one level up).
+
+pkgname=ae5-control
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Crash recovery without reboot and a settings app for the Creative Sound BlasterX AE-5"
+url="https://github.com/Kamegohan/soundblaster-ae5-linux"
+arch=('any')
+license=('GPL-2.0-or-later')
+depends=('python' 'pyside6' 'alsa-utils' 'libpulse' 'pipewire' 'pipewire-pulse'
+         'wireplumber' 'polkit' 'systemd' 'libnotify' 'pciutils')
+backup=('etc/xdg/autostart/ae5-control.desktop')
+install=ae5-control.install
+source=()
+
+_src="$startdir/.."
+_lib=/usr/lib/ae5-control
+
+check() {
+  cd "$_src"
+  python3 -m unittest discover -s tests -t .
+}
+
+package() {
+  cd "$_src"
+
+  # Programm: gleiche Ordnerstruktur wie im Projekt, damit relative Pfade stimmen
+  install -d "$pkgdir$_lib"/{ae5control,tools,bin}
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -m644 ae5control/*.py "$pkgdir$_lib/ae5control/"
+  install -m755 tools/ae5-recover.sh tools/ae5-diag.sh tools/ae5-watchdog.sh tools/ae5-amp-guard.sh \
+    "$pkgdir$_lib/tools/"
+  install -m755 bin/ae5-control bin/ae5ctl "$pkgdir$_lib/bin/"
+  python3 -m compileall -q -d "$_lib/ae5control" "$pkgdir$_lib/ae5control"
+
+  install -d "$pkgdir/usr/bin"
+  ln -s "$_lib/bin/ae5-control" "$pkgdir/usr/bin/ae5-control"
+  ln -s "$_lib/bin/ae5ctl" "$pkgdir/usr/bin/ae5ctl"
+  ln -s "$_lib/tools/ae5-recover.sh" "$pkgdir/usr/bin/ae5-recover"
+  ln -s "$_lib/tools/ae5-diag.sh" "$pkgdir/usr/bin/ae5-diag"
+
+  # Root-Helfer + polkit (ohne Passwort für den angemeldeten Benutzer)
+  install -Dm755 system/ae5-reset-helper "$pkgdir$_lib/ae5-reset-helper"
+  sed "s|/usr/local/libexec/ae5-control/ae5-reset-helper|$_lib/ae5-reset-helper|" \
+    system/org.ae5control.reset.policy > policy.tmp
+  install -Dm644 policy.tmp "$pkgdir/usr/share/polkit-1/actions/org.ae5control.reset.policy"
+  rm policy.tmp
+
+  # Treiber-Vorgabe: Modell "ae5" auch nach hartem Reset
+  install -Dm644 config/ae5-model.fw "$pkgdir/usr/lib/firmware/ae5-control/ae5-model.fw"
+  install -Dm644 config/ae5-control.conf "$pkgdir/usr/lib/modprobe.d/ae5-control.conf"
+
+  # PipeWire: eigenes Profil (per udev nur für die AE-5) + kein Ruhezustand
+  install -Dm644 system/91-ae5-control.rules "$pkgdir/usr/lib/udev/rules.d/91-ae5-control.rules"
+  install -Dm644 pipewire/ae5-control.conf \
+    "$pkgdir/usr/share/alsa-card-profile/mixer/profile-sets/ae5-control.conf"
+  install -Dm644 pipewire/ae5-output-headphones.conf pipewire/ae5-output-speakers.conf \
+    -t "$pkgdir/usr/share/alsa-card-profile/mixer/paths/"
+  install -Dm644 pipewire/51-ae5-no-suspend.conf \
+    "$pkgdir/usr/share/wireplumber/wireplumber.conf.d/51-ae5-no-suspend.conf"
+
+  # systemd-Benutzerdienste (Pfade auf die Paketinstallation umgestellt)
+  for unit in ae5-watchdog ae5-amp-guard; do
+    sed "s|@LIBDIR@|$_lib|" "systemd/$unit.service" > unit.tmp
+    install -Dm644 unit.tmp "$pkgdir/usr/lib/systemd/user/$unit.service"
+  done
+  rm unit.tmp
+
+  # Menüeintrag + Autostart im Tray
+  sed "s|^Exec=.*|Exec=/usr/bin/ae5-control|" desktop/ae5-control.desktop > desktop.tmp
+  install -Dm644 desktop.tmp "$pkgdir/usr/share/applications/ae5-control.desktop"
+  sed -i "s|^Exec=.*|Exec=/usr/bin/ae5-control --tray|" desktop.tmp
+  echo "X-KDE-autostart-after=panel" >> desktop.tmp
+  install -Dm644 desktop.tmp "$pkgdir/etc/xdg/autostart/ae5-control.desktop"
+  rm desktop.tmp
+
+  install -Dm644 README.md README.de.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=AE-5 Control
+GenericName=Sound card settings
+GenericName[de]=Soundkarten-Einstellungen
+Comment=Sound profiles, effects and equalizer for the Sound BlasterX AE-5
+Comment[de]=Klangprofile, Effekte und Equalizer für die Sound BlasterX AE-5
+Exec=@ROOT@/bin/ae5-control
+Icon=audio-card
+Categories=Settings;HardwareSettings;
+Keywords=sound;soundblaster;creative;equalizer;ae5;
+Keywords[de]=Sound;Soundkarte;Creative;Equalizer;AE-5;
+StartupNotify=false

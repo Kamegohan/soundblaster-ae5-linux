@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Startet die Kommandozeile aus dem Projektordner (ohne Installation).
+ROOT=$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)
+exec env PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}" python3 -m ae5control.cli "$@"
